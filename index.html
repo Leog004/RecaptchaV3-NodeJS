@@ -1,0 +1,57 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js"></script>
+    <script src="https://www.google.com/recaptcha/api.js?render=<SITEKEY>"></script>
+
+    <title>Document</title>
+</head>
+<body>
+<div class="ui raised very padded text container segment">
+        <h2 class="ui header">Subscribe Form</h2>
+    <form class="ui form" id="subscribeForm">
+        <div class="field">
+          <label>First Name</label>
+          <input type="text" name="first-name" id="first-name" placeholder="First Name">
+        </div>
+        <div class="field">
+          <label>Last Name</label>
+          <input type="text" name="last-name"  id="last-name" placeholder="Last Name">
+        </div>
+        <button class="ui button" type="submit">Submit</button>
+      </form>  
+</div>  
+
+<script>
+    document.getElementById('subscribeForm').addEventListener('submit',onSubmit);
+    
+    function onSubmit(e){
+        e.preventDefault();
+        
+        grecaptcha.execute('<SITEKEY>', {action: 'homepage'}).then(function(token) {
+
+        // This data is not being used in the back end (Only the token), but have it here for you to experiment
+        const firstName = document.querySelector('#first-name').value;
+        const lastName = document.querySelector('#last-name').value;
+        const captcha = token;
+
+            fetch('/subscribe',{
+            method: 'POST',
+            headers:{
+                    'Accept': 'application/json, text/plain, */*',
+                    'Content-Type': 'application/json'
+                
+            },
+            body:JSON.stringify({firstName:firstName,lastName:lastName,captcha:captcha})
+            }).then(res => res.json()).then(data => { alert("msg: " + data.msg + ", success?: " + data.success + ", score: " + data.score)})     
+
+        });
+        
+    }
+</script>
+
+</body>
+</html>
